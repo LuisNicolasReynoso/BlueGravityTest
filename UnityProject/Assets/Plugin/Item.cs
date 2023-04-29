@@ -17,8 +17,9 @@ public class Item
     public int positionY;
 
     public int cost;
+    public string description;
 
-    public Item(int ID, string Name, int Damage, int Defense, string spritePath, int Cost)
+    public Item(int ID, string Name, int Damage, int Defense, string spritePath, int Cost, string Description)
     {
         id = ID;
         name = Name;
@@ -26,5 +27,6 @@ public class Item
         defense = Defense;
         sprite = spritePath;
         cost = Cost;
+        description = Description;
     }
 }

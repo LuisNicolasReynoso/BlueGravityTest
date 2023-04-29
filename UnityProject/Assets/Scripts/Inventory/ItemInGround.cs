@@ -28,6 +28,8 @@ public class ItemInGround : MonoBehaviour
         anim = GetComponent<Animator>();
         anim.SetTrigger("Drop");
         spriteRenderer.sprite = Resources.Load<Sprite>("Icons/" + item.name);
+
+       
     }
 
     private void OnMouseDown()
@@ -35,8 +37,20 @@ public class ItemInGround : MonoBehaviour
         OnClick();
     }
 
+    private void OnMouseOver()
+    {
+        Vector2 PosFix = Camera.main.WorldToScreenPoint(this.transform.position);
+        Inventory.Instance.tooltip.SetTooltip(item, PosFix, false);
+    }
+
+    private void OnMouseExit()
+    {
+        Inventory.Instance.tooltip.Hide();
+    }
+
     void Remove()
     {
+        Inventory.Instance.tooltip.Hide();
         Destroy(this.gameObject);
     }
 }

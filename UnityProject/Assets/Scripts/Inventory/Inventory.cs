@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Inventory : MonoBehaviour
 {
@@ -17,14 +18,14 @@ public class Inventory : MonoBehaviour
     public GameObject itemInGroundPref;
 
     public List<Slot> Slots = new List<Slot>();
-    public List<Item> ItemsInInventory = new List<Item>();
+    //public List<Item> ItemsInInventory = new List<Item>();
     public List<ItemIcon> ItemIcons = new List<ItemIcon>();
 
-    
- 
 
-    public Vector2 inventorySize = new Vector2(5,3);
-    public Vector2 slotOffset = new Vector2(.1f,.5f);
+
+
+    public Vector2 inventorySize = new Vector2(5, 3);
+    public Vector2 slotOffset = new Vector2(.1f, .5f);
 
 
     InventoryDatabase database;
@@ -36,6 +37,8 @@ public class Inventory : MonoBehaviour
     bool mouseOnCooldown;
 
     float dropItemPositionThreshold = 100;
+
+    public Tooltip tooltip;
 
     void Awake() //Create Singleton
     {
@@ -56,17 +59,17 @@ public class Inventory : MonoBehaviour
 
     void CreateSlots()
     {
-        for(int i= 0;i<inventorySize.y;i++)
+        for (int i = 0; i < inventorySize.y; i++)
         {
-            for(int j=0;j<inventorySize.x;j++)
+            for (int j = 0; j < inventorySize.x; j++)
             {
                 GameObject newSlot = (GameObject)Instantiate(slotPref);
                 newSlot.transform.SetParent(slotParent);
-                newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotOffset.x*j, slotParent.transform.position.y - slotOffset.y * i, slotParent.transform.position.z);
+                newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotOffset.x * j, slotParent.transform.position.y - slotOffset.y * i, slotParent.transform.position.z);
                 Slot slot = newSlot.GetComponent<Slot>();
                 slot.positionX = j;
                 slot.positionY = i;
-                
+
                 Slots.Add(slot);
             }
         }
@@ -80,8 +83,8 @@ public class Inventory : MonoBehaviour
         Item NewItem = CloneItem(FromDatabase);
 
         AddItem(NewItem);
-     
-    
+
+
     }
 
     public void AddItem(Item NewItem)
@@ -93,7 +96,7 @@ public class Inventory : MonoBehaviour
             DesignatedSlot.Used = true;
             NewItem.positionX = DesignatedSlot.positionX;
             NewItem.positionY = DesignatedSlot.positionY;
-            ItemsInInventory.Add(NewItem); //CHECK IF SPACE FIRST
+
 
             CreateItemIcon(NewItem, DesignatedSlot);
         }
@@ -105,7 +108,7 @@ public class Inventory : MonoBehaviour
 
     public Item CloneItem(Item I)
     {
-        Item item = new Item(I.id, I.name, I.damage, I.defense, I.sprite, I.cost);
+        Item item = new Item(I.id, I.name, I.damage, I.defense, I.sprite, I.cost, I.description);
 
         return item;
     }
@@ -113,9 +116,9 @@ public class Inventory : MonoBehaviour
     public Item SearchItemByID(List<Item> list, int ID)
     {
         Item item = null;
-        foreach(Item I in list)
+        foreach (Item I in list)
         {
-            if(I.id == ID)
+            if (I.id == ID)
             {
                 item = I;
                 break;
@@ -128,9 +131,9 @@ public class Inventory : MonoBehaviour
     public Slot CheckForSpace()
     {
         Slot slot = null;
-        foreach(Slot S in Slots)
+        foreach (Slot S in Slots)
         {
-            if(!S.Used)
+            if (!S.Used)
             {
                 slot = S;
                 break;
@@ -139,7 +142,7 @@ public class Inventory : MonoBehaviour
 
         return slot;
     }
-   
+
     public void CreateItemIcon(Item item, Slot slot)
     {
         GameObject newIcon = (GameObject)Instantiate(itemIconPref);
@@ -147,8 +150,8 @@ public class Inventory : MonoBehaviour
 
         ItemIcon icon = newIcon.GetComponent<ItemIcon>();
         icon.SetItem(item);
-        
-        ItemIcons.Add(icon);
+
+
         SetItemIcon(icon, slot);
     }
 
@@ -160,31 +163,35 @@ public class Inventory : MonoBehaviour
         slot.Used = true;
         icon.CurrentItem.positionX = slot.positionX;
         icon.CurrentItem.positionY = slot.positionY;
+        ItemIcons.Add(icon);
+
     }
 
 
 
     public void SelectItem(ItemIcon icon)
     {
-        if(!mouseOnCooldown)
+        if (!mouseOnCooldown)
         {
             SetItemInHand(icon);
             SetMouseCooldown();
         }
-       
+
     }
 
     void SetItemInHand(ItemIcon icon)
     {
-        if(icon.CurrentSlot != null)
+        ItemIcons.Remove(icon);
+        if (icon.CurrentSlot != null)
         {
             icon.CurrentSlot.Used = false;
-        }        
+        }
         icon.Selected = true;
         iconInHand = icon;
-      
+
     }
 
+    /*/
     void RemoveItemFromSlot(ItemIcon icon)
     {
        icon.CurrentSlot.Used = false;
@@ -194,24 +201,24 @@ public class Inventory : MonoBehaviour
         //icon.Currentslot.changecolor
         icon.CurrentSlot = null;
 
-    }
+    }/*/
 
     void MoveItemIcon(ItemIcon icon)
     {
         Slot slot = GetSlotCloserToMouse();
 
-        if(!CheckDistanceToMouse())
+        if (slot != null)
         {
 
-            if(slot.Used)
+            if (slot.Used)
             {
                 icon.Selected = false;
 
                 ItemIcon OtherItem = GetItemIconByPosition(slot.positionX, slot.positionY);
-                OtherItem.CurrentSlot = null;                
+                OtherItem.CurrentSlot = null;
                 SetItemIcon(icon, slot);
                 SetItemInHand(OtherItem);
-                
+
 
             }
             else
@@ -222,9 +229,9 @@ public class Inventory : MonoBehaviour
                 icon.Selected = false;
                 iconInHand = null;
             }
-     
 
-            
+
+            ClearSlots();
         }
         else
         {
@@ -233,10 +240,9 @@ public class Inventory : MonoBehaviour
         }
 
 
-        
-        ClearSlots();
     }
 
+    /*/
     bool CheckDistanceToMouse()
     {
         bool DropArea = false;
@@ -254,27 +260,34 @@ public class Inventory : MonoBehaviour
         return DropArea;
         //if(distance>)
 
-    }
+    }/*/
 
     void DropItem(ItemIcon Icon)
     {
-        if(iconInHand != null)
+        if (iconInHand != null)
         {
             ClearSlots();
             Item itemToDrop = iconInHand.CurrentItem;
 
-            GameObject NewItemInGround = (GameObject)Instantiate(itemInGroundPref, GameManager.Instance.Player.transform.position, Quaternion.identity);
-            ItemInGround itemInGround =  NewItemInGround.GetComponent<ItemInGround>();
-            itemInGround.item = itemToDrop;
-            itemInGround.SetImage();
 
-            Rigidbody2D rb = itemInGround.GetComponent<Rigidbody2D>();
-
-            rb.AddForce(Vector3.down * Random.Range(3,5),ForceMode2D.Impulse);
+            SpawnItem(itemToDrop, GameManager.Instance.Player.transform.position, Vector3.down);
 
             Destroy(iconInHand.gameObject);
         }
     }
+
+    void SpawnItem(Item item, Vector3 position, Vector3 Direction)
+    {
+        GameObject NewItemInGround = (GameObject)Instantiate(itemInGroundPref, position, Quaternion.identity);
+        ItemInGround itemInGround = NewItemInGround.GetComponent<ItemInGround>();
+        itemInGround.item = item;
+        itemInGround.SetImage();
+
+        Rigidbody2D rb = itemInGround.GetComponent<Rigidbody2D>();
+
+        rb.AddForce(Direction * Random.Range(3, 5), ForceMode2D.Impulse);
+    }
+
 
     public void InventoryButton()
     {
@@ -286,12 +299,12 @@ public class Inventory : MonoBehaviour
         {
             Close();
         }
-            
+
     }
 
     public void Open()
     {
-        if(!showingPanel)
+        if (!showingPanel)
         {
             showingPanel = true;
             panel.SetActive(true);
@@ -302,25 +315,26 @@ public class Inventory : MonoBehaviour
     {
         if (showingPanel)
         {
+            tooltip.Hide();
             showingPanel = false;
             panel.SetActive(false);
         }
     }
 
-    private void Update() 
+    private void Update()
     {
 
         //REMOVE
-        if(Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            AddItemFromDatabase(Random.Range(0,database.ItemDatabase.Count));
+            AddItemFromDatabase(Random.Range(0, database.ItemDatabase.Count));
         }
 
-        if(iconInHand!= null)
+        if (iconInHand != null)
         {
             iconInHand.transform.position = Input.mousePosition;
 
-            if(!mouseOnCooldown)
+            if (!mouseOnCooldown)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -331,21 +345,61 @@ public class Inventory : MonoBehaviour
                 {
                     ClearSlots();
                     Slot highlightSlot = GetSlotCloserToMouse();
-                    highlightSlot.mouseOver();
+                    if (highlightSlot != null)
+                    {
+                        highlightSlot.mouseOver();
+                    }
+
                 }
             }
-          
+
         }
-        
+        else
+        {
+            Slot S = GetSlotCloserToMouse();
+            if (S != null)
+            {
+                if (S.Used)
+                {
+                    ItemIcon ToShow = GetItemIconByPosition(S.positionX, S.positionY);
+                    if (ToShow != null)
+                    {
+                        tooltip.SetTooltip(ToShow.CurrentItem, S.transform.position, true);
+                    }
+                    else
+                    {
+                        print("itemNUll");
+                    }
+                }
+                else
+                {
+                    tooltip.Hide();
+                }
+
+            }
+            else
+            {             
+                if(tooltip.Showing)
+                {
+                    if(tooltip.FromUI)
+                    {
+                        tooltip.Hide();
+                    }
+                }    
+               
+            }
+
+        }
+
     }
 
 
-    public ItemIcon GetItemIconByPosition(int X,int Y)
+    public ItemIcon GetItemIconByPosition(int X, int Y)
     {
         ItemIcon item = null;
-        foreach(ItemIcon I in ItemIcons)
+        foreach (ItemIcon I in ItemIcons)
         {
-            if(I.CurrentItem.positionX == X && I.CurrentItem.positionY == Y)
+            if (I.CurrentItem.positionX == X && I.CurrentItem.positionY == Y)
             {
                 item = I;
                 break;
@@ -371,28 +425,37 @@ public class Inventory : MonoBehaviour
     public Slot GetSlotCloserToMouse()
     {
         Slot slot = null;
-        
+        float maxRange = 65f;
+
         Vector2 MousePosition = Input.mousePosition;
 
         float distance = 9999f;
-        foreach(Slot S in Slots)
+        foreach (Slot S in Slots)
         {
             float distanceDelta = Vector2.Distance(S.transform.position, MousePosition);
-            if(distanceDelta < distance)
+            if (distanceDelta < distance)
             {
                 slot = S;
                 distance = distanceDelta;
             }
         }
 
+        
+        if (distance > maxRange)
+        {
+            slot = null;
+        }
+
         return slot;
     }
 
+
+
     void ClearSlots()
     {
-        foreach(Slot S in Slots)
+        foreach (Slot S in Slots)
         {
-            if(!S.Used)
+            if (!S.Used)
             {
                 S.ClearColors();
             }
@@ -407,11 +470,18 @@ public class Inventory : MonoBehaviour
     {
         CancelInvoke("MouseCooldown");
         mouseOnCooldown = true;
-        Invoke("MouseCooldown",.1f);
+        Invoke("MouseCooldown", .1f);
     }
 
     void MouseCooldown()
     {
         mouseOnCooldown = false;
+    }
+
+
+
+    private bool MouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
     }
 }
