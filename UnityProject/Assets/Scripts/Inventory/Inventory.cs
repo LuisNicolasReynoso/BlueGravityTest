@@ -40,6 +40,9 @@ public class Inventory : MonoBehaviour
 
     public Tooltip tooltip;
 
+    [SerializeField]
+    private int gold;
+
     void Awake() //Create Singleton
     {
         if (Instance == null) { Instance = this; }
@@ -87,8 +90,9 @@ public class Inventory : MonoBehaviour
 
     }
 
-    public void AddItem(Item NewItem)
+    public void AddItem(Item item)
     {
+        Item NewItem = CloneItem(item);
         Slot DesignatedSlot = CheckForSpace();
 
         if (DesignatedSlot != null)
@@ -276,7 +280,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    void SpawnItem(Item item, Vector3 position, Vector3 Direction)
+   public void SpawnItem(Item item, Vector3 position, Vector3 Direction)
     {
         GameObject NewItemInGround = (GameObject)Instantiate(itemInGroundPref, position, Quaternion.identity);
         ItemInGround itemInGround = NewItemInGround.GetComponent<ItemInGround>();
@@ -479,9 +483,24 @@ public class Inventory : MonoBehaviour
     }
 
 
-
-    private bool MouseOverUI()
+    public void ChangeGold(int value)
     {
-        return EventSystem.current.IsPointerOverGameObject();
+        gold = gold + value;
+        if(gold < 0)
+        {
+            gold = 0;
+        }
     }
+
+    public bool CheckGold(int value)
+    {
+        bool EnoughGold = false;
+        if(gold + value < 0)
+        {
+            EnoughGold = true;
+        }
+
+        return EnoughGold;
+    }
+   
 }

@@ -10,17 +10,31 @@ public class ItemInGround : MonoBehaviour
     public SpriteRenderer spriteRenderer;
 
     Animator anim;
-    
+
+    public bool ForSale;
+
+    bool pickCooldown = true;
+    bool buyCooldown;
     void Start()
     {
-        
+        StartCoroutine(PickCD());
     }
 
     // Update is called once per frame
     void OnClick()
     {
-        Inventory.Instance.AddItem(item);
-        Remove();
+        if(!ForSale)
+        {
+            PickItem();
+            
+        }
+        else
+        {
+
+            BuyItem();
+          
+        }
+       
     }
 
     public void SetImage()
@@ -30,6 +44,32 @@ public class ItemInGround : MonoBehaviour
         spriteRenderer.sprite = Resources.Load<Sprite>("Icons/" + item.name);
 
        
+    }
+
+    void PickItem()
+    {
+        if(!pickCooldown)
+        {
+            Inventory.Instance.AddItem(item);
+            Remove();
+        }
+        
+    }
+
+    void BuyItem()
+    {
+        if (!buyCooldown)
+        {
+            buyCooldown = true;
+            if (Inventory.Instance.CheckGold(-item.cost))
+            {
+                Inventory.Instance.ChangeGold(-item.cost);
+                Inventory.Instance.SpawnItem(item, this.transform.position, Vector3.right);
+            }
+
+            StartCoroutine(BuyCD());
+        }
+           
     }
 
     private void OnMouseDown()
@@ -52,5 +92,18 @@ public class ItemInGround : MonoBehaviour
     {
         Inventory.Instance.tooltip.Hide();
         Destroy(this.gameObject);
+    }
+
+
+    IEnumerator BuyCD()
+    {
+        yield return new WaitForSeconds(.25f);
+        buyCooldown = false;
+    }
+
+    IEnumerator PickCD()
+    {
+        yield return new WaitForSeconds(.5f);
+        pickCooldown = false;
     }
 }
