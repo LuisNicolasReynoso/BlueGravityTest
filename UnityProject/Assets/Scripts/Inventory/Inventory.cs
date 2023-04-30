@@ -74,7 +74,7 @@ public class Inventory : MonoBehaviour
         database = GetComponent<InventoryDatabase>();
         CreateSlots();
 
-        ChangeGold(1000);
+        ChangeGold(3000);
 
         Slots.Add(SpellSlot);
         Slots.Add(RingSlot);
@@ -83,13 +83,21 @@ public class Inventory : MonoBehaviour
 
     void CreateSlots()
     {
+       float resolutionMultiplerX = Screen.width / 1280f;
+       float resolutionMultiplerY = Screen.height / 720f;
+
+        Vector2 slotsOffsetScaled =  new Vector2(slotOffset.x * resolutionMultiplerX, slotOffset.y * resolutionMultiplerY);
+
         for (int i = 0; i < inventorySize.y; i++)
         {
             for (int j = 0; j < inventorySize.x; j++)
             {
                 GameObject newSlot = (GameObject)Instantiate(slotPref);
                 newSlot.transform.SetParent(slotParent);
-                newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotOffset.x * j, slotParent.transform.position.y - slotOffset.y * i, slotParent.transform.position.z);
+                newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotsOffsetScaled.x * j, slotParent.transform.position.y - slotsOffsetScaled.y * i, slotParent.transform.position.z);
+                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
+                rectTransform.localScale = new Vector3(rectTransform.localScale.x * resolutionMultiplerX, rectTransform.localScale.y * resolutionMultiplerY, rectTransform.localScale.z);
+
                 Slot slot = newSlot.GetComponent<Slot>();
                 slot.positionX = j;
                 slot.positionY = i;
@@ -98,6 +106,7 @@ public class Inventory : MonoBehaviour
             }
         }
     }
+   
 
 
     public void AddItemFromDatabase(int ID)
@@ -204,6 +213,7 @@ public class Inventory : MonoBehaviour
     {
         if (!mouseOnCooldown && iconInHand == null)
         {
+            tooltip.Hide();
             StopAllCoroutines();
             SetMouseCooldown();
             SetItemInHand(icon);
@@ -314,20 +324,6 @@ public class Inventory : MonoBehaviour
         rb.AddForce(Direction * Random.Range(3, 5), ForceMode2D.Impulse);
     }
 
-
-    public void InventoryButton()
-    {
-        if (!showingPanel)
-        {
-            Open();
-        }
-        else
-        {
-            Close();
-        }
-
-    }
-
     public void Open()
     {
         if (!showingPanel)
@@ -349,6 +345,9 @@ public class Inventory : MonoBehaviour
 
     private void Update()
     {
+        if (!showingPanel) { return; }
+
+
         if (iconInHand != null)
         {
             iconInHand.transform.position = Input.mousePosition;
@@ -545,7 +544,12 @@ public class Inventory : MonoBehaviour
         {
             itemIcon.CurrentSlot.Used = false;
 
-            ChangeGold(itemIcon.CurrentItem.cost / 2);
+            if(itemIcon.CurrentSlot.EquipmentSlot)
+            {
+                UnequipItem(itemIcon.CurrentSlot);
+            }
+
+            ChangeGold(itemIcon.CurrentItem.cost);
             ItemIcons.Remove(itemIcon);
             Destroy(itemIcon.gameObject);
 

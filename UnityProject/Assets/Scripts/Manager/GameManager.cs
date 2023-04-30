@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
 
     public MessageManager messageManager;
 
+    [SerializeField]
+    GameObject inventoryButton;
+
     
     void Awake() //Create Singleton
     {
@@ -21,5 +24,22 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void ClickInventoryButton()
+    {
+        if(!Inventory.Instance.showingPanel)
+        {
+            inventoryButton.SetActive(false);
+            Inventory.Instance.Open();
+        }       
+    }
+
+    public void CloseInventory()
+    {
+        if (Inventory.Instance.showingPanel)
+        {
+            inventoryButton.SetActive(true);
+            Inventory.Instance.Close();
+        }       
+    }
     
 }

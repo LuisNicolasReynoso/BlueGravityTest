@@ -9,14 +9,19 @@ public class Tooltip : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public TextMeshProUGUI ItemName;
-    public TextMeshProUGUI ItemDescription;
-    public Image ItemIcon;
-    public TextMeshProUGUI ItemCost;
+    public TextMeshProUGUI itemName;
+    public TextMeshProUGUI itemDescription;
+    public Image itemIcon;
+    public TextMeshProUGUI itemCost;
 
-    public GameObject Panel;
+    public TextMeshProUGUI itemDamage;
+    public TextMeshProUGUI itemDefense;
 
+    public GameObject panel;
+
+    [HideInInspector]
     public bool Showing;
+    [HideInInspector]
     public bool FromUI;
 
     [SerializeField]
@@ -41,12 +46,16 @@ public class Tooltip : MonoBehaviour
 
     void LoadValues(Item item)
     {
-        ItemName.text = item.name;
-        ItemDescription.text = item.description;
+        itemName.text = item.name;
+        itemDescription.text = item.description;
 
-        ItemIcon.sprite = Resources.Load<Sprite>("Icons/" + item.sprite);
+        itemIcon.sprite = Resources.Load<Sprite>("Icons/" + item.sprite);
 
-        ItemCost.text = item.cost.ToString();
+        itemCost.text = "Cost: " + item.cost.ToString();
+
+        itemDamage.text = "Damage: " + item.damage.ToString();
+
+        itemDefense.text = "Defense: " + item.defense.ToString();
     }
 
 
@@ -55,7 +64,7 @@ public class Tooltip : MonoBehaviour
         if(!Showing)
         {
             Showing = true;
-            Panel.gameObject.SetActive(true);
+            panel.gameObject.SetActive(true);
         }
     }
 
@@ -64,7 +73,7 @@ public class Tooltip : MonoBehaviour
         if(Showing)
         {
             Showing = false;
-            Panel.gameObject.SetActive(false);
+            panel.gameObject.SetActive(false);
         }
     }
 }

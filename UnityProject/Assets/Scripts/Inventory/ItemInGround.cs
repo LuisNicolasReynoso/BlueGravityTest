@@ -76,7 +76,7 @@ public class ItemInGround : MonoBehaviour
             if (Inventory.Instance.CheckGold(-item.cost))
             {
                 Inventory.Instance.ChangeGold(-item.cost);
-                Inventory.Instance.SpawnItem(item, this.transform.position, Vector3.right);
+                Inventory.Instance.SpawnItem(item, this.transform.position, this.transform.right);
             }
             else
             {
@@ -124,4 +124,11 @@ public class ItemInGround : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         pickCooldown = false;
     }
+
+
+   
+
+
+
+    
 }
