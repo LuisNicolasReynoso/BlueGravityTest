@@ -28,11 +28,6 @@ public class Tooltip : MonoBehaviour
     float offsetX = 120;
     [SerializeField]
     float offsetY = 50;
-    void Start()
-    {
-        
-    }
-
     
 
     public void SetTooltip(Item item, Vector3 pos, bool fromUI)
@@ -41,7 +36,10 @@ public class Tooltip : MonoBehaviour
         FromUI = fromUI;
         Show();
 
-        this.transform.position = new Vector3(pos.x - offsetX, pos.y + offsetY, pos.z);
+        float resolutionMultiplerX = Screen.width / 1280f;
+        float resolutionMultiplerY = Screen.height / 720f;
+
+        this.transform.position = new Vector3(pos.x - (offsetX * resolutionMultiplerX), pos.y + (offsetY * resolutionMultiplerY), pos.z);
     }
 
     void LoadValues(Item item)

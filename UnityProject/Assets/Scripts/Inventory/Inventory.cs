@@ -58,6 +58,9 @@ public class Inventory : MonoBehaviour
 
     public GameObject SellPanel;
 
+    float resolutionMultiplerX;
+    float resolutionMultiplerY; 
+
     void Awake() //Create Singleton
     {
         if (Instance == null) { Instance = this; }
@@ -71,21 +74,29 @@ public class Inventory : MonoBehaviour
     void Start()
     {
         panel.SetActive(false);
+
         database = GetComponent<InventoryDatabase>();
+
+        //Create the inventory slots
         CreateSlots();
 
+        //Starting Gold
         ChangeGold(3000);
 
+        //Add the equipment slots to the slot list
         Slots.Add(SpellSlot);
         Slots.Add(RingSlot);
         Slots.Add(ConsumableSlot);
     }
 
+    //Create the multiple slots that represents player inventory
     void CreateSlots()
     {
-       float resolutionMultiplerX = Screen.width / 1280f;
-       float resolutionMultiplerY = Screen.height / 720f;
+        //for scaling to different resolutions
+        resolutionMultiplerX = Screen.width / 1280f;
+        resolutionMultiplerY = Screen.height / 720f;
 
+        //slot offset is also scaled
         Vector2 slotsOffsetScaled =  new Vector2(slotOffset.x * resolutionMultiplerX, slotOffset.y * resolutionMultiplerY);
 
         for (int i = 0; i < inventorySize.y; i++)
@@ -94,32 +105,23 @@ public class Inventory : MonoBehaviour
             {
                 GameObject newSlot = (GameObject)Instantiate(slotPref);
                 newSlot.transform.SetParent(slotParent);
+                //Position the slot in the array position
                 newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotsOffsetScaled.x * j, slotParent.transform.position.y - slotsOffsetScaled.y * i, slotParent.transform.position.z);
                 RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
-                rectTransform.localScale = new Vector3(rectTransform.localScale.x * resolutionMultiplerX, rectTransform.localScale.y * resolutionMultiplerY, rectTransform.localScale.z);
+                ScaleObjectToResolution(rectTransform);
 
                 Slot slot = newSlot.GetComponent<Slot>();
+
+                //Set the slot position to the array position
                 slot.positionX = j;
                 slot.positionY = i;
 
                 Slots.Add(slot);
             }
         }
-    }
-   
+    }  
 
-
-    public void AddItemFromDatabase(int ID)
-    {
-
-        Item FromDatabase = SearchItemByID(database.ItemDatabase, ID);
-        Item NewItem = CloneItem(FromDatabase);
-
-        AddItem(NewItem);
-
-
-    }
-
+    //Add an item, creating an item icon on inventory
     public bool AddItem(Item item)
     {
         bool space = false;
@@ -154,21 +156,7 @@ public class Inventory : MonoBehaviour
         return item;
     }
 
-    public Item SearchItemByID(List<Item> list, int ID)
-    {
-        Item item = null;
-        foreach (Item I in list)
-        {
-            if (I.id == ID)
-            {
-                item = I;
-                break;
-            }
-        }
-
-        return item;
-    }
-
+    //Checks if inventory has space for more items
     public Slot CheckForSpace()
     {
         Slot slot = null;
@@ -188,6 +176,7 @@ public class Inventory : MonoBehaviour
         return slot;
     }
 
+    //Create an item icon
     public void CreateItemIcon(Item item, Slot slot)
     {
         GameObject newIcon = (GameObject)Instantiate(itemIconPref);
@@ -196,10 +185,12 @@ public class Inventory : MonoBehaviour
         ItemIcon icon = newIcon.GetComponent<ItemIcon>();
         icon.SetItem(item);
 
+        ScaleObjectToResolution(icon.rectTransform);
 
         SetItemIcon(icon, slot);
     }
 
+    //Set item icon to slot position
     public void SetItemIcon(ItemIcon icon, Slot slot)
     {
         ClearSlots();
@@ -213,7 +204,7 @@ public class Inventory : MonoBehaviour
     }
 
 
-
+    //Select an item to begin drag
     public void SelectItem(ItemIcon icon)
     {
         if (!mouseOnCooldown && iconInHand == null)
@@ -227,6 +218,7 @@ public class Inventory : MonoBehaviour
 
     }
 
+    //When selecting an item, beggin the drag item action
     void SetItemInHand(ItemIcon icon)
     {
         ItemIcons.Remove(icon);
@@ -247,13 +239,15 @@ public class Inventory : MonoBehaviour
 
     }
 
-
+    //Leaves the selected item in a given position, or switch the item that was already in that position
     void MoveItemIcon(ItemIcon icon)
     {       
         Slot slot = GetSlotCloserToMouse();
 
         if (slot != null)
         {
+
+            //If it is an equipment slot, only equip if the type match
             if (slot.EquipmentSlot)
             {
                 if (icon.CurrentItem.itemType != slot.type)
@@ -268,6 +262,7 @@ public class Inventory : MonoBehaviour
 
             }
 
+            //Switch items
             if (slot.Used)
             {
                 icon.Selected = false;
@@ -278,10 +273,8 @@ public class Inventory : MonoBehaviour
                 SetItemInHand(OtherItem);
                 AudioManager.Instance.PlayRandomSound(1);
 
-
-
             }
-            else
+            else //Leave item in that position
             {
                 AudioManager.Instance.PlayRandomSound(1);
                 SetItemIcon(icon, slot);
@@ -302,7 +295,7 @@ public class Inventory : MonoBehaviour
 
     }
 
-
+    //When dragging items outside of inventory space, drop it on the ground
     void DropItem(ItemIcon Icon)
     {
         if (iconInHand != null)
@@ -317,6 +310,8 @@ public class Inventory : MonoBehaviour
         }
     }
 
+
+    //Creates an item in a given position adding a force to given direction
     public void SpawnItem(Item item, Vector3 position, Vector3 Direction)
     {
         GameObject NewItemInGround = (GameObject)Instantiate(itemInGroundPref, position, Quaternion.identity);
@@ -329,6 +324,7 @@ public class Inventory : MonoBehaviour
         rb.AddForce(Direction * Random.Range(3, 5), ForceMode2D.Impulse);
     }
 
+    //Open inventory
     public void Open()
     {
         if (!showingPanel)
@@ -338,6 +334,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    //Close Inventory
     public void Close()
     {
         if (showingPanel)
@@ -355,81 +352,92 @@ public class Inventory : MonoBehaviour
 
         if (iconInHand != null)
         {
-            iconInHand.transform.position = Input.mousePosition;
-
-            if (!mouseOnCooldown)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    MoveItemIcon(iconInHand);
-                    
-                    StopAllCoroutines();
-                    StartCoroutine(SetMouseCooldown());
-                }
-                else
-                {
-                    ClearSlots();
-                    Slot highlightSlot = GetSlotCloserToMouse();
-                    if (highlightSlot != null)
-                    {
-                        highlightSlot.mouseOver();
-                    }
-
-                }
-            }
-
+            DraggingItem();
         }
         else
         {
-            Slot S = GetSlotCloserToMouse();
-            if (S != null)
-            {
-                if (S.Used)
-                {
-                    ItemIcon ToShow = GetItemIconByPosition(S.positionX, S.positionY);
-                    if (ToShow != null)
-                    {
-                        tooltip.SetTooltip(ToShow.CurrentItem, S.transform.position, true);
-
-                        if (Input.GetMouseButtonDown(1))
-                        {
-                            SellItem(ToShow);
-                        }
-                    }
-                    else
-                    {
-                        print("itemNull");
-                    }
-
-
-                }
-                else
-                {
-                    tooltip.Hide();
-                }
-
-            }
-            else
-            {
-                if (tooltip.Showing)
-                {
-                    if (tooltip.FromUI)
-                    {
-                        tooltip.Hide();
-                    }
-                }
-
-            }
-
+           MouseOverItem();
         }
 
         SellUI();
 
 
-
     }
 
+    //If an item was selected previously, drag it with the mouse
+    void DraggingItem()
+    {
+        iconInHand.transform.position = Input.mousePosition;
 
+        if (!mouseOnCooldown)
+        {
+            //On click, leave the item in that position or switch with the item in that position
+            if (Input.GetMouseButtonDown(0))
+            {
+                MoveItemIcon(iconInHand);
+
+                StopAllCoroutines();
+                StartCoroutine(SetMouseCooldown());
+            }
+            else
+            {
+                HighlightSlot();
+            }
+        }
+    }
+
+    //When pointing items with the mouse, having not selected an item
+    void MouseOverItem()
+    {
+        Slot S = GetSlotCloserToMouse();
+        if (S != null)
+        {
+            if (S.Used)
+            {
+                ItemIcon ToShow = GetItemIconByPosition(S.positionX, S.positionY);
+                if (ToShow != null)
+                {
+                    tooltip.SetTooltip(ToShow.CurrentItem, S.transform.position, true);
+
+                    if (Input.GetMouseButtonDown(1))
+                    {
+                        SellItem(ToShow);
+                    }
+                }
+
+            }
+            else
+            {
+                tooltip.Hide();
+            }
+
+        }
+        else
+        {
+            if (tooltip.Showing)
+            {
+                if (tooltip.FromUI)
+                {
+                    tooltip.Hide();
+                }
+            }
+
+        }
+    }
+
+    //Highlights slot closer to mouse
+    void HighlightSlot()
+    {
+        ClearSlots();
+        Slot highlightSlot = GetSlotCloserToMouse();
+        if (highlightSlot != null)
+        {
+            highlightSlot.mouseOver();
+        }
+    }
+
+    
+    //Returns an item based on given array position
     public ItemIcon GetItemIconByPosition(int X, int Y)
     {
         ItemIcon item = null;
@@ -444,6 +452,7 @@ public class Inventory : MonoBehaviour
         return item;
     }
 
+    //Returns a slot based on given array position
     public Slot GetSlotByPosition(int X, int Y)
     {
         Slot slot = null;
@@ -458,10 +467,11 @@ public class Inventory : MonoBehaviour
         return (slot);
     }
 
+    //Returns the slot that is closer to mouse position
     public Slot GetSlotCloserToMouse()
     {
         Slot slot = null;
-        float maxRange = 65f;
+        float maxRange = 85f;
 
         Vector2 MousePosition = Input.mousePosition;
 
@@ -486,7 +496,7 @@ public class Inventory : MonoBehaviour
     }
 
 
-
+    //Clears slots colors
     void ClearSlots()
     {
         foreach (Slot S in Slots)
@@ -507,14 +517,9 @@ public class Inventory : MonoBehaviour
         mouseOnCooldown = true;       
         yield return new WaitForSeconds(.1f);
         mouseOnCooldown = false;
-    }
+    }    
 
-    void MouseCooldown()
-    {
-        mouseOnCooldown = false;
-    }
-
-
+    //Modifies the gold value and updates the UI
     public void ChangeGold(int value)
     {
         gold = gold + value;
@@ -526,6 +531,7 @@ public class Inventory : MonoBehaviour
         UpdateGoldUI();
     }
 
+    //Check if gold is enough to buy items, returns the result
     public bool CheckGold(int value)
     {
         bool EnoughGold = false;
@@ -537,12 +543,13 @@ public class Inventory : MonoBehaviour
         return EnoughGold;
     }
 
-
+    
     void UpdateGoldUI()
     {
         goldText.text = gold.ToString();
     }
 
+    //When right clicking an item near shopkeeper, sell the item
     void SellItem(ItemIcon itemIcon)
     {
         if (nearShopKeeper)
@@ -564,6 +571,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    //Show UI when near shop keeper
     void SellUI()
     {
         if (nearShopKeeper)
@@ -586,7 +594,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-
+    //When equiping an item, update the player stats and cast the spells
     void EquipItem(ItemIcon icon)
     {
         Equipment equipment = GameManager.Instance.Player.GetComponent<Equipment>();
@@ -595,6 +603,7 @@ public class Inventory : MonoBehaviour
     
     }
 
+    //When unequiping items update player stats and remove spells
     void UnequipItem(Slot S)
     {
         Equipment equipment = GameManager.Instance.Player.GetComponent<Equipment>();
@@ -604,9 +613,16 @@ public class Inventory : MonoBehaviour
        
     }
 
+    //Update UI values
     public void SetDamageAndDefense(int damage, int defense)
     {
         damageText.text = "Damage: " + damage.ToString();
         defenseText.text = "Defense: " + defense.ToString();
+    }
+
+    //Adapts a given rectransform to different resolutions
+    void ScaleObjectToResolution(RectTransform rectTransform)
+    {
+        rectTransform.localScale = new Vector3(rectTransform.localScale.x * resolutionMultiplerX, rectTransform.localScale.y * resolutionMultiplerY, rectTransform.localScale.z);
     }
 }

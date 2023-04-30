@@ -11,6 +11,8 @@ public class ItemIcon : MonoBehaviour
     public bool Selected;
 
     public Slot CurrentSlot;
+
+    public RectTransform rectTransform;
     void Start()
     {
         
