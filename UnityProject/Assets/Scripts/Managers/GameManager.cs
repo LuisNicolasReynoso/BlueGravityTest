@@ -13,7 +13,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject inventoryButton;
 
-    
+    [SerializeField]
+    GameObject AppPanel;
+
+    [SerializeField]
+    GameObject TextpopPref;
     void Awake() //Create Singleton
     {
         if (Instance == null) { Instance = this; }
@@ -43,5 +47,30 @@ public class GameManager : MonoBehaviour
             AudioManager.Instance.PlaySound(3);
         }       
     }
+
+    public void OpenAppPanel()
+    {
+        AppPanel.SetActive(true);
+    }
+
+    public void CloseAppPanel()
+    {
+        AppPanel.SetActive(false);
+    }
+
+    public void CloseApp()
+    {
+        Application.Quit();
+    }
     
+
+    public void TextPop(string str, Color color, Transform pos)
+    {
+        GameObject newObject = (GameObject)Instantiate(TextpopPref);
+        newObject.transform.SetParent(this.transform);
+
+        TextPopUp newTextPopUP = newObject.GetComponent<TextPopUp>();
+
+        newTextPopUP.PopText(str, color, pos);
+    }
 }

@@ -528,6 +528,15 @@ public class Inventory : MonoBehaviour
             gold = 0;
         }
 
+        if(value >= 0)
+        {
+            GameManager.Instance.TextPop("+" + value, Color.green, GameManager.Instance.Player.transform);
+        }
+        else
+        {
+            GameManager.Instance.TextPop(value.ToString(), Color.red, GameManager.Instance.Player.transform);
+        }
+       
         UpdateGoldUI();
     }
 
@@ -567,6 +576,7 @@ public class Inventory : MonoBehaviour
 
             ClearSlots();
 
+           
             AudioManager.Instance.PlayRandomSound(0);
         }
     }

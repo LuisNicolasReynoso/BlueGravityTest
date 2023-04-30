@@ -20,7 +20,7 @@ public class Item
     public string description;
 
 
-    public enum Type {Consumable, Jewerly, Spell, None}
+    public enum Type {Consumable, Jewelry, Spell, None}
     public Type itemType;
     public Item(int ID, string Name, int Damage, int Defense, string spritePath, int Cost, string Description, Type type)
     {

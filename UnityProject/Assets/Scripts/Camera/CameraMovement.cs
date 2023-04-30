@@ -67,8 +67,12 @@ public class CameraMovement : MonoBehaviour
         {
             this.transform.position = cameraTarget.transform.position;
         }
+        else
+        {
+            cameraTarget = GameManager.Instance.Player;
+        }
 
-
+       
     }
 
     private void Update()
@@ -77,12 +81,7 @@ public class CameraMovement : MonoBehaviour
         {
             Zoom();
            
-        }
-        else
-        {
-            cameraTarget = GameManager.Instance.Player;
-            
-        }
+        }     
 
     }
 

@@ -43,7 +43,7 @@ public class Equipment : MonoBehaviour
 
                 break;
 
-            case Item.Type.Jewerly:
+            case Item.Type.Jewelry:
                 Inventory.Instance.EquipedRing = icon;
                 break;
 
@@ -67,7 +67,7 @@ public class Equipment : MonoBehaviour
 
                 break;
 
-            case Item.Type.Jewerly:
+            case Item.Type.Jewelry:
                 Inventory.Instance.EquipedRing = null;
                 break;
 

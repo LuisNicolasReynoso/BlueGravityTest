@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(CameraMovement))]
 public class SmoothFollowEditor : Editor
 {
@@ -64,3 +64,4 @@ public class SmoothFollowEditor : Editor
         if (GUI.changed) { EditorUtility.SetDirty(cameraMovement); }
     }
 }
+#endif

@@ -56,7 +56,8 @@ public class Movement : MonoBehaviour
             anim.SetFloat("Y", animationY);
             rig.velocity = Direction * MovementSpeed;
         }
-        else        {
+        else
+        {
             rig.velocity = Vector2.zero;
             anim.SetBool("Moving", false);
         }
