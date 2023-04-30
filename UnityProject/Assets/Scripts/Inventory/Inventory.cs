@@ -43,9 +43,7 @@ public class Inventory : MonoBehaviour
 
     public ItemIcon iconInHand;
 
-    bool mouseOnCooldown;
-
-    float dropItemPositionThreshold = 100;
+    bool mouseOnCooldown;    
 
     public Tooltip tooltip;
 

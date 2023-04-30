@@ -58,20 +58,20 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\UI\MessageManager.cs" />
     <Compile Include="Assets\Scripts\Character\Movement.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Tooltip.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventoryDatabase.cs" />
     <Compile Include="Assets\Scripts\Inventory\ItemIcon.cs" />
     <Compile Include="Assets\Scripts\Inventory\ItemInGround.cs" />
     <Compile Include="Assets\Plugin\Item.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slot.cs" />
+    <Compile Include="Assets\Scripts\Character\Equipment.cs" />
+    <Compile Include="Assets\Scripts\NPCs\ShopKeeper.cs" />
+    <Compile Include="Assets\Scripts\Character\FireballSpell.cs" />
     <Compile Include="Assets\Scripts\CustomInspectors\CameraMovementInspector.cs" />
     <Compile Include="Assets\Scripts\Inventory\Inventory.cs" />
     <Compile Include="Assets\Scripts\Manager\GameManager.cs" />
     <Compile Include="Assets\Scripts\Camera\CameraMovement.cs" />
     <Compile Include="Assets\Scripts\UI\Message.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Tooltip.cs" />
-    <Compile Include="Assets\Scripts\NPCs\ShopKeeper.cs" />
-    <Compile Include="Assets\Scripts\Character\FireballSpell.cs" />
-    <Compile Include="Assets\Scripts\Character\Equipment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
