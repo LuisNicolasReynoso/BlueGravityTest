@@ -19,6 +19,7 @@ public class TextPopUp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Transform world position to UI position
         Vector2 PosFix = Camera.main.WorldToScreenPoint(pos.position);
         float offsetY = +15;
 

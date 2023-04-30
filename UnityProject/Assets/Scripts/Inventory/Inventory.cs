@@ -32,12 +32,8 @@ public class Inventory : MonoBehaviour
     [HideInInspector]
     public ItemIcon EquipedConsumable;
 
-
     public Vector2 inventorySize = new Vector2(5, 3);
     public Vector2 slotOffset = new Vector2(.1f, .5f);
-
-
-    InventoryDatabase database;
 
     public static Inventory Instance = null;
 
@@ -58,8 +54,7 @@ public class Inventory : MonoBehaviour
 
     public GameObject SellPanel;
 
-    float resolutionMultiplerX;
-    float resolutionMultiplerY; 
+    RectTransform canvasRect;
 
     void Awake() //Create Singleton
     {
@@ -75,8 +70,7 @@ public class Inventory : MonoBehaviour
     {
         panel.SetActive(false);
 
-        database = GetComponent<InventoryDatabase>();
-
+        canvasRect = GameManager.Instance.GetComponent<RectTransform>();
         //Create the inventory slots
         CreateSlots();
 
@@ -92,23 +86,18 @@ public class Inventory : MonoBehaviour
     //Create the multiple slots that represents player inventory
     void CreateSlots()
     {
-        //for scaling to different resolutions
-        resolutionMultiplerX = Screen.width / 1280f;
-        resolutionMultiplerY = Screen.height / 720f;
+        Vector2 slotsOffsetScaled = new Vector2(slotOffset.x * canvasRect.localScale.x, slotOffset.y * canvasRect.localScale.y);
 
-        //slot offset is also scaled
-        Vector2 slotsOffsetScaled =  new Vector2(slotOffset.x * resolutionMultiplerX, slotOffset.y * resolutionMultiplerY);
 
         for (int i = 0; i < inventorySize.y; i++)
         {
             for (int j = 0; j < inventorySize.x; j++)
             {
                 GameObject newSlot = (GameObject)Instantiate(slotPref);
-                newSlot.transform.SetParent(slotParent);
+                newSlot.transform.SetParent(slotParent, false);
                 //Position the slot in the array position
                 newSlot.transform.position = new Vector3(slotParent.transform.position.x + slotsOffsetScaled.x * j, slotParent.transform.position.y - slotsOffsetScaled.y * i, slotParent.transform.position.z);
-                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();
-                ScaleObjectToResolution(rectTransform);
+                RectTransform rectTransform = newSlot.GetComponent<RectTransform>();              
 
                 Slot slot = newSlot.GetComponent<Slot>();
 
@@ -180,13 +169,11 @@ public class Inventory : MonoBehaviour
     public void CreateItemIcon(Item item, Slot slot)
     {
         GameObject newIcon = (GameObject)Instantiate(itemIconPref);
-        newIcon.transform.SetParent(iconsParent);
+        newIcon.transform.SetParent(iconsParent,false);
 
         ItemIcon icon = newIcon.GetComponent<ItemIcon>();
         icon.SetItem(item);
-
-        ScaleObjectToResolution(icon.rectTransform);
-
+        
         SetItemIcon(icon, slot);
     }
 
@@ -346,7 +333,7 @@ public class Inventory : MonoBehaviour
     }
 
     private void Update()
-    {
+    {       
         if (!showingPanel) { return; }
 
 
@@ -360,7 +347,7 @@ public class Inventory : MonoBehaviour
         }
 
         SellUI();
-
+        
 
     }
 
@@ -472,6 +459,7 @@ public class Inventory : MonoBehaviour
     {
         Slot slot = null;
         float maxRange = 85f;
+        maxRange = maxRange * canvasRect.localScale.x; //Scale with resolution
 
         Vector2 MousePosition = Input.mousePosition;
 
@@ -629,10 +617,6 @@ public class Inventory : MonoBehaviour
         damageText.text = "Damage: " + damage.ToString();
         defenseText.text = "Defense: " + defense.ToString();
     }
-
-    //Adapts a given rectransform to different resolutions
-    void ScaleObjectToResolution(RectTransform rectTransform)
-    {
-        rectTransform.localScale = new Vector3(rectTransform.localScale.x * resolutionMultiplerX, rectTransform.localScale.y * resolutionMultiplerY, rectTransform.localScale.z);
-    }
+       
+    
 }
