@@ -69,7 +69,7 @@ public class Tooltip : MonoBehaviour
     public void Hide()
     {
         if(Showing)
-        {
+        {            
             Showing = false;
             panel.gameObject.SetActive(false);
         }

@@ -15,6 +15,8 @@ public class ItemInGround : MonoBehaviour
 
     bool pickCooldown = true;
     bool buyCooldown;
+
+    bool pickedUp;
     void Start()
     {
         StartCoroutine(PickCD());
@@ -61,7 +63,8 @@ public class ItemInGround : MonoBehaviour
         {
             if(Inventory.Instance.AddItem(item))
             {
-                AudioManager.Instance.PlayRandomSound(1);
+                pickedUp = true;
+                AudioManager.Instance.PlayRandomSound(1);                
                 Remove();
             }
            
@@ -100,8 +103,12 @@ public class ItemInGround : MonoBehaviour
 
     private void OnMouseOver()
     {
-        Vector2 PosFix = Camera.main.WorldToScreenPoint(this.transform.position);
-        Inventory.Instance.tooltip.SetTooltip(item, PosFix, false);
+        if(!pickedUp)
+        {
+            Vector2 PosFix = Camera.main.WorldToScreenPoint(this.transform.position);
+            Inventory.Instance.tooltip.SetTooltip(item, PosFix, false);
+        }
+        
     }
 
     private void OnMouseExit()
