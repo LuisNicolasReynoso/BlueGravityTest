@@ -19,7 +19,10 @@ public class Item
     public int cost;
     public string description;
 
-    public Item(int ID, string Name, int Damage, int Defense, string spritePath, int Cost, string Description)
+
+    public enum Type {Consumable, Jewerly, Spell, None}
+    public Type itemType;
+    public Item(int ID, string Name, int Damage, int Defense, string spritePath, int Cost, string Description, Type type)
     {
         id = ID;
         name = Name;
@@ -28,5 +31,6 @@ public class Item
         sprite = spritePath;
         cost = Cost;
         description = Description;
+        itemType = type;
     }
 }

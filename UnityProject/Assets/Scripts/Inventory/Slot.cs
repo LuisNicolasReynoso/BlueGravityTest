@@ -8,6 +8,9 @@ public class Slot : MonoBehaviour
     public int positionX;
     public int positionY;
     public bool Used;
+    public bool EquipmentSlot;
+
+    public Item.Type type;
 
     public Image image;
 

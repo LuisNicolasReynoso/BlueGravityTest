@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1049257648160694836}
   - component: {fileID: 2431736984383944649}
   m_Layer: 5
-  m_Name: Slot
+  m_Name: RingSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,10 +51,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a34dc74dc0b715a4ebdf39022ad0925a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionX: 0
-  positionY: 0
+  positionX: 98
+  positionY: 99
   Used: 0
-  EquipmentSlot: 0
+  EquipmentSlot: 1
+  type: 1
   image: {fileID: 4893988527539335842}
   normalColor: {r: 0.16862746, g: 0.16862746, b: 0.16862746, a: 1}
   mouseOverColor: {r: 0.30224645, g: 0.7169812, b: 0.16504094, a: 1}

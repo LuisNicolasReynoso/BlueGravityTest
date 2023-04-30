@@ -45,7 +45,7 @@ public class ItemInGround : MonoBehaviour
     public void SetImage()
     {
         anim = GetComponent<Animator>();     
-        spriteRenderer.sprite = Resources.Load<Sprite>("Icons/" + item.name);
+        spriteRenderer.sprite = Resources.Load<Sprite>("Icons/" + item.sprite);
 
 
         if (!ForSale)
@@ -92,6 +92,8 @@ public class ItemInGround : MonoBehaviour
     {
         OnClick();
     }
+
+    
 
     private void OnMouseOver()
     {
