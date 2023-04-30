@@ -141,6 +141,7 @@ public class Inventory : MonoBehaviour
         {
             space = false;
             GameManager.Instance.messageManager.SpawnMessage("Inventory full", GameManager.Instance.Player.transform, true);
+            AudioManager.Instance.PlaySound(4);
         }
 
         return space;
@@ -173,11 +174,15 @@ public class Inventory : MonoBehaviour
         Slot slot = null;
         foreach (Slot S in Slots)
         {
-            if (!S.Used)
+            if(!S.EquipmentSlot)
             {
-                slot = S;
-                break;
+                if (!S.Used)
+                {
+                    slot = S;
+                    break;
+                }
             }
+          
         }
 
         return slot;
@@ -271,14 +276,14 @@ public class Inventory : MonoBehaviour
                 OtherItem.CurrentSlot = null;
                 SetItemIcon(icon, slot);
                 SetItemInHand(OtherItem);
-
+                AudioManager.Instance.PlayRandomSound(1);
 
 
 
             }
             else
             {
-
+                AudioManager.Instance.PlayRandomSound(1);
                 SetItemIcon(icon, slot);
 
                 icon.Selected = false;
@@ -305,7 +310,7 @@ public class Inventory : MonoBehaviour
             ClearSlots();
             Item itemToDrop = iconInHand.CurrentItem;
 
-
+            AudioManager.Instance.PlaySound(1);
             SpawnItem(itemToDrop, GameManager.Instance.Player.transform.position, Vector3.down);
 
             Destroy(iconInHand.gameObject);
@@ -554,6 +559,8 @@ public class Inventory : MonoBehaviour
             Destroy(itemIcon.gameObject);
 
             ClearSlots();
+
+            AudioManager.Instance.PlayRandomSound(0);
         }
     }
 

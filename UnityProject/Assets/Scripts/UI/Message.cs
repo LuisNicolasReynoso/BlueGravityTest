@@ -26,7 +26,7 @@ public class Message : MonoBehaviour
     void Update()
     {
         Vector2 PosFix = Camera.main.WorldToScreenPoint(DesiredPosition.position);
-        float offsetY = -15;
+        float offsetY = +15;
 
         PosFix = new Vector2(PosFix.x, PosFix.y + offsetY);
 

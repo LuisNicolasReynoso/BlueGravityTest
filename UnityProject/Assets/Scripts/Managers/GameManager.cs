@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         {
             inventoryButton.SetActive(false);
             Inventory.Instance.Open();
+            AudioManager.Instance.PlaySound(2);
         }       
     }
 
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
         {
             inventoryButton.SetActive(true);
             Inventory.Instance.Close();
+            AudioManager.Instance.PlaySound(3);
         }       
     }
     

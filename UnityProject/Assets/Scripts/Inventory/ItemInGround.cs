@@ -61,6 +61,7 @@ public class ItemInGround : MonoBehaviour
         {
             if(Inventory.Instance.AddItem(item))
             {
+                AudioManager.Instance.PlayRandomSound(1);
                 Remove();
             }
            
@@ -77,9 +78,11 @@ public class ItemInGround : MonoBehaviour
             {
                 Inventory.Instance.ChangeGold(-item.cost);
                 Inventory.Instance.SpawnItem(item, this.transform.position, this.transform.right);
+                AudioManager.Instance.PlayRandomSound(0);
             }
             else
             {
+                AudioManager.Instance.PlayRandomSound(4);
                 GameManager.Instance.messageManager.SpawnMessage("Not enough gold", GameManager.Instance.Player.transform, true);
             }
 

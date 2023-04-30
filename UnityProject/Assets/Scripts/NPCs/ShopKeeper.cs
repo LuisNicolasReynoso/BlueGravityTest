@@ -44,7 +44,7 @@ public class ShopKeeper : MonoBehaviour
         {
             GameManager.Instance.messageManager.SpawnMessage("Hello traveler! Right click items while near me to sell them", messagePos, false);
 
-            Inventory.Instance.Open();
+            GameManager.Instance.ClickInventoryButton();
         }
         
     }
