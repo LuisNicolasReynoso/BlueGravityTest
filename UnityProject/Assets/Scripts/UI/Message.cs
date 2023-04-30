@@ -38,6 +38,8 @@ public class Message : MonoBehaviour
     {
         Text.text = message;
         DesiredPosition = position;
+
+
     }
 
     public IEnumerator Remove()

@@ -8,21 +8,43 @@ public class MessageManager : MonoBehaviour
     public Transform position;
 
     public GameObject messagePref;
+
+    Message characterMessage;
+    Message npcMessage;
     void Start()
     {
         
     }
+   
+ 
 
-    // Update is called once per frame
-    void Update()
+    public void SpawnMessage(string text, Transform position, bool character)
     {
-        if(Input.GetKeyDown(KeyCode.M))
+        if(character)
         {
-            GameObject NewMessage = (GameObject)Instantiate(messagePref);
-            NewMessage.transform.SetParent(this.transform);
-
-            Message message = NewMessage.GetComponent<Message>();
-            message.SetMessage("Hello", position);
+            if(characterMessage == null)
+            {
+                characterMessage = CreateMessage(text, position);
+            }
         }
+        else
+        {
+            if(npcMessage == null)
+            {
+                npcMessage = CreateMessage(text, position);
+            }
+        }
+       
+    }
+
+    Message CreateMessage(string text, Transform position)
+    {
+        GameObject NewMessage = (GameObject)Instantiate(messagePref);
+        NewMessage.transform.SetParent(this.transform);
+
+        Message message = NewMessage.GetComponent<Message>();
+        message.SetMessage(text, position);
+
+        return message;
     }
 }

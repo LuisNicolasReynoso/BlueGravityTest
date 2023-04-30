@@ -18,6 +18,11 @@ public class ItemInGround : MonoBehaviour
     void Start()
     {
         StartCoroutine(PickCD());
+
+        if(ForSale)
+        {
+            SetImage();
+        }
     }
 
     // Update is called once per frame
@@ -39,19 +44,26 @@ public class ItemInGround : MonoBehaviour
 
     public void SetImage()
     {
-        anim = GetComponent<Animator>();
-        anim.SetTrigger("Drop");
+        anim = GetComponent<Animator>();     
         spriteRenderer.sprite = Resources.Load<Sprite>("Icons/" + item.name);
 
-       
+
+        if (!ForSale)
+        {
+            anim.SetTrigger("Drop");
+        }
+
     }
 
     void PickItem()
     {
         if(!pickCooldown)
         {
-            Inventory.Instance.AddItem(item);
-            Remove();
+            if(Inventory.Instance.AddItem(item))
+            {
+                Remove();
+            }
+           
         }
         
     }
@@ -65,6 +77,10 @@ public class ItemInGround : MonoBehaviour
             {
                 Inventory.Instance.ChangeGold(-item.cost);
                 Inventory.Instance.SpawnItem(item, this.transform.position, Vector3.right);
+            }
+            else
+            {
+                GameManager.Instance.messageManager.SpawnMessage("Not enough gold", GameManager.Instance.Player.transform, true);
             }
 
             StartCoroutine(BuyCD());

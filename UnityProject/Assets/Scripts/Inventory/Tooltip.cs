@@ -28,11 +28,7 @@ public class Tooltip : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 
     public void SetTooltip(Item item, Vector3 pos, bool fromUI)
     {

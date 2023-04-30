@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance = null;
 
+    public MessageManager messageManager;
+
+    
     void Awake() //Create Singleton
     {
         if (Instance == null) { Instance = this; }
@@ -17,4 +20,6 @@ public class GameManager : MonoBehaviour
 
 
     }
+
+    
 }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class Inventory : MonoBehaviour
 {
-    // Start is called before the first frame update
 
     public GameObject panel;
     public bool showingPanel;
@@ -17,8 +17,7 @@ public class Inventory : MonoBehaviour
     public GameObject itemIconPref;
     public GameObject itemInGroundPref;
 
-    public List<Slot> Slots = new List<Slot>();
-    //public List<Item> ItemsInInventory = new List<Item>();
+    public List<Slot> Slots = new List<Slot>();    
     public List<ItemIcon> ItemIcons = new List<ItemIcon>();
 
 
@@ -43,6 +42,12 @@ public class Inventory : MonoBehaviour
     [SerializeField]
     private int gold;
 
+    public TextMeshProUGUI goldText;
+
+    public bool nearShopKeeper;
+
+    public GameObject SellPanel;
+
     void Awake() //Create Singleton
     {
         if (Instance == null) { Instance = this; }
@@ -58,6 +63,8 @@ public class Inventory : MonoBehaviour
         panel.SetActive(false);
         database = GetComponent<InventoryDatabase>();
         CreateSlots();
+
+        ChangeGold(1000);
     }
 
     void CreateSlots()
@@ -90,8 +97,10 @@ public class Inventory : MonoBehaviour
 
     }
 
-    public void AddItem(Item item)
+    public bool AddItem(Item item)
     {
+        bool space = false;
+
         Item NewItem = CloneItem(item);
         Slot DesignatedSlot = CheckForSpace();
 
@@ -103,11 +112,15 @@ public class Inventory : MonoBehaviour
 
 
             CreateItemIcon(NewItem, DesignatedSlot);
+            space = true;
         }
         else
         {
-            print("Inventory full");
+            space = false;
+            GameManager.Instance.messageManager.SpawnMessage("Inventory full", GameManager.Instance.Player.transform, true);
         }
+
+        return space;
     }
 
     public Item CloneItem(Item I)
@@ -194,18 +207,7 @@ public class Inventory : MonoBehaviour
         iconInHand = icon;
 
     }
-
-    /*/
-    void RemoveItemFromSlot(ItemIcon icon)
-    {
-       icon.CurrentSlot.Used = false;
-       icon.CurrentItem.positionX = 0;
-       icon.CurrentItem.positionY = 0;
-
-        //icon.Currentslot.changecolor
-        icon.CurrentSlot = null;
-
-    }/*/
+ 
 
     void MoveItemIcon(ItemIcon icon)
     {
@@ -246,25 +248,6 @@ public class Inventory : MonoBehaviour
 
     }
 
-    /*/
-    bool CheckDistanceToMouse()
-    {
-        bool DropArea = false;
-
-        Vector2 mousePosition = Input.mousePosition;
-        Vector2 slotPos = Slots[0].transform.position;
-
-        float pos = mousePosition.x + dropItemPositionThreshold;
-        if (pos < slotPos.x)
-        {
-            DropArea = true;
-        }
-      
-
-        return DropArea;
-        //if(distance>)
-
-    }/*/
 
     void DropItem(ItemIcon Icon)
     {
@@ -326,14 +309,7 @@ public class Inventory : MonoBehaviour
     }
 
     private void Update()
-    {
-
-        //REMOVE
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            AddItemFromDatabase(Random.Range(0, database.ItemDatabase.Count));
-        }
-
+    {   
         if (iconInHand != null)
         {
             iconInHand.transform.position = Input.mousePosition;
@@ -369,11 +345,18 @@ public class Inventory : MonoBehaviour
                     if (ToShow != null)
                     {
                         tooltip.SetTooltip(ToShow.CurrentItem, S.transform.position, true);
+
+                        if (Input.GetMouseButtonDown(1))
+                        {
+                            SellItem(ToShow);
+                        }
                     }
                     else
                     {
-                        print("itemNUll");
+                        print("itemNull");
                     }
+
+                   
                 }
                 else
                 {
@@ -394,6 +377,8 @@ public class Inventory : MonoBehaviour
             }
 
         }
+
+        SellUI();
 
     }
 
@@ -490,12 +475,14 @@ public class Inventory : MonoBehaviour
         {
             gold = 0;
         }
+
+        UpdateGoldUI();
     }
 
     public bool CheckGold(int value)
-    {
+    {       
         bool EnoughGold = false;
-        if(gold + value < 0)
+        if(gold + value > 0)
         {
             EnoughGold = true;
         }
@@ -503,4 +490,45 @@ public class Inventory : MonoBehaviour
         return EnoughGold;
     }
    
+
+    void UpdateGoldUI()
+    {
+        goldText.text = gold.ToString();
+    }
+
+    void SellItem(ItemIcon itemIcon)
+    {
+        if(nearShopKeeper)
+        {
+            itemIcon.CurrentSlot.Used = false;
+
+            ChangeGold(itemIcon.CurrentItem.cost / 2);
+            ItemIcons.Remove(itemIcon);
+            Destroy(itemIcon.gameObject);
+
+            ClearSlots();
+        }
+    }
+
+    void SellUI()
+    {
+        if (nearShopKeeper)
+        {
+            if (showingPanel)
+            {
+                if (!SellPanel.gameObject.activeSelf)
+                {
+                    SellPanel.SetActive(true);
+                }
+
+            }
+        }
+        else
+        {
+            if (SellPanel.gameObject.activeSelf)
+            {
+                SellPanel.SetActive(false);
+            }
+        }
+    }
 }

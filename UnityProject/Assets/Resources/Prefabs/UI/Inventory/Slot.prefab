@@ -57,7 +57,7 @@ MonoBehaviour:
   image: {fileID: 4893988527539335842}
   normalColor: {r: 0.16862746, g: 0.16862746, b: 0.16862746, a: 1}
   mouseOverColor: {r: 0.30224645, g: 0.7169812, b: 0.16504094, a: 1}
-  UsedColor: {r: 0.13980061, g: 0.30345, b: 0.9622642, a: 1}
+  UsedColor: {r: 0.13008183, g: 0.26002064, b: 0.7924528, a: 1}
 --- !u!1 &5314881190328763008
 GameObject:
   m_ObjectHideFlags: 0
